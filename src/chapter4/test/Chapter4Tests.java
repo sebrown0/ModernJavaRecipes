@@ -5,12 +5,7 @@ import static chapter4.Sorting.sortByLengthMinWithComparator;
 import static chapter4.Sorting.sortByLengthThenAlpha;
 import static chapter4.Sorting.sortByScoreThenLastThenFirst;
 import static chapter4.Sorting.sortNatural;
-import static global_data.GlobalTestData.getListOfCustomers;
-import static global_data.GlobalTestData.getListOfEmployees;
-import static global_data.GlobalTestData.getListOfGolfers;
-import static global_data.GlobalTestData.getListOfSuperHeroes;
-import static global_data.GlobalTestData.getListOfVillans;
-import static global_data.GlobalTestData.sampleStrings;
+import static global_data.GlobalTestData.*;
 import static org.junit.Assert.assertTrue;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
@@ -88,10 +83,9 @@ class Chapter4Tests {
    * Mapping and sorting.
    */
   @Test
-  void findTheLenOfEachSentence() {
-    String testFile = "C:/users/brown/eclipse-workspace/java/com/sebrown/ModernJavaRecipes/resource/shakespeare.txt";
+  void findTheLenOfEachSentence() {    
     Map<Integer, Long> lineLen = null;
-    try (Stream<String> lines = Files.lines(Paths.get(testFile))) {
+    try (Stream<String> lines = Files.lines(Paths.get(SHAKESPEARE_FILE))) {
 	    lineLen = lines.filter(s -> s.length() > 75)        
 	      .collect(Collectors.groupingBy(String::length, Collectors.counting()));
     } catch (IOException e) {
@@ -102,9 +96,8 @@ class Chapter4Tests {
   
   @Test
   void findFirstLineWithMoreThan75Chars() {
-    String testFile = "C:/users/brown/eclipse-workspace/java/com/sebrown/ModernJavaRecipes/resource/shakespeare.txt";
     Optional<String> line = null;
-    try (Stream<String> lines = Files.lines(Paths.get(testFile))) {
+    try (Stream<String> lines = Files.lines(Paths.get(SHAKESPEARE_FILE))) {
       line = lines.filter(s -> s.length() > 75).findFirst();
     } catch (IOException e) {
       e.printStackTrace();

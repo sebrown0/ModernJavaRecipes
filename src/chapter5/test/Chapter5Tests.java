@@ -1,4 +1,4 @@
-package chapter5.tests;
+package chapter5.test;
 
 import static global_data.GlobalTestData.passage;
 import static global_data.GlobalTestData.sampleNumbers;

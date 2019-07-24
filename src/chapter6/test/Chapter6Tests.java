@@ -1,4 +1,4 @@
-package chapter6.tests;
+package chapter6.test;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static utils.test.UtilTestData.getListOfBooksInteger;

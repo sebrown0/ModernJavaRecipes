@@ -18,8 +18,6 @@ import helpers.Order;
  *
  */
 public class GlobalTestData {
-
-  public static final String SHAKESPEARE_FILE = "C:/users/brown/eclipse-workspace/java/com/sebrown/ModernJavaRecipes/resource/shakespeare.txt";
   
   public static String[] sampleString = { "this", "is", "an", "array", "of", "strings" };
   
@@ -70,5 +68,6 @@ public class GlobalTestData {
         new Employee(8, "Sansa",  0, "Stark"),    
         new Employee(9, "Arya", 1_000, "Stark"));
   }
-  
+
+  public static final String SHAKESPEARE_FILE = "C:/users/brown/eclipse-workspace/java/com/sebrown/ModernJavaRecipes/resource/shakespeare.txt";
 }

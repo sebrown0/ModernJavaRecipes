@@ -1,7 +1,9 @@
 package global_data;
 
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -69,5 +71,23 @@ public class GlobalTestData {
         new Employee(9, "Arya", 1_000, "Stark"));
   }
 
+  public static Map<Long, Order> localOrders = new HashMap<>();  
+  public static Map<Long, Order> remoteOrders = new HashMap<>();
+  public static Map<Long, Order> ordersAll = new HashMap<>();
+  
   public static final String SHAKESPEARE_FILE = "C:/users/brown/eclipse-workspace/java/com/sebrown/ModernJavaRecipes/resource/shakespeare.txt";
+  
+  static {
+    final long sampleSize = sampleNumbers.size();
+    
+    sampleNumbers.stream()
+      .mapToLong(l -> l)
+      .forEach(n -> {      
+        localOrders.put(n, new Order(n));
+        remoteOrders.put(n + sampleSize, new Order(n + sampleSize));
+      });
+    
+    ordersAll.putAll(localOrders);
+    ordersAll.putAll(remoteOrders);
+  }
 }

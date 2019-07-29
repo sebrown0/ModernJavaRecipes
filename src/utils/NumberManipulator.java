@@ -14,6 +14,10 @@ public class NumberManipulator {
     return num * multiplier;
   }
 
+  public static double xplyBy(Long num, double multiplier) {
+    return num * multiplier;
+  }
+  
   public static <T extends Number> boolean divisibleBy(T num, T divisor) {
     return num.doubleValue() % divisor.doubleValue() == 0;
   }

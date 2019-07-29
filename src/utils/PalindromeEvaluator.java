@@ -1,5 +1,9 @@
 package utils;
-
+/**
+ * 
+ * @author Steve Brown
+ *
+ */
 public class PalindromeEvaluator {
 	
 	public static boolean isPalindrome(String s) {

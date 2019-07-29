@@ -6,6 +6,7 @@ import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.function.IntBinaryOperator;
 import java.util.function.IntPredicate;
+import java.util.function.LongBinaryOperator;
 import java.util.function.Predicate;
 import java.util.logging.Logger;
 
@@ -25,7 +26,8 @@ public class SimpleFunctions {
     s -> {
       return (s.charAt(s.length() - 1) == '.') ? s.substring(0, s.length() - 1) : s;
     };
-    
+  
+  public static BiFunction<Long, Long, Long> xplyNums = (l1, l2) -> l1 * l2;
   public static BiFunction<String, String, String> concatStrings = (s1, s2) -> s1.concat(s2);
   public static BiFunction<String, String, String> concatStringsAndTerminate = concatStrings.andThen(addFullStop);
   
@@ -35,7 +37,7 @@ public class SimpleFunctions {
   public static Consumer<String> printer = System.out::println;
   public static Function<String, String> print = s -> {printer.accept(s); return s;}; 
   public static BiFunction<String, Logger, String> logData = (s, l) -> { l.info(s); return s;};
-  public static BiConsumer<String, Logger> printThenLog = (s,l) -> { print.apply("Print: " + s); logData.apply("Log: " + s, l); };
+  public static BiConsumer<String, Logger> printThenLog = (s, l) -> { print.apply("Print: " + s); logData.apply("Log: " + s, l); };
   public static BiFunction<String, Logger, String> logAndPrint = logData.andThen(print);
   
   public static IntPredicate isPerfectSquare = n -> { return ((Math.sqrt(n) % 1) == 0); };
@@ -43,7 +45,8 @@ public class SimpleFunctions {
   public static IntPredicate numberisTriangularAndPerfect = isTriangularNumber.and(isPerfectSquare);
   public static Predicate<Integer> isNotZero = n -> n != 0;
   
-  public static IntBinaryOperator sumInts = (a, b) -> a + b; 
+  public static IntBinaryOperator sumInts = (a, b) -> a + b;
+  public static LongBinaryOperator sumLongs = (a, b) -> a + b;
   
   public static IntBinaryOperator div = (a, b) -> { 
     try {
@@ -53,4 +56,5 @@ public class SimpleFunctions {
     }
     return 0;
   };
+ 
 }

@@ -1,6 +1,9 @@
 .metadata
 bin/
 tmp/
+TestOutput/
+target/
+
 *.jar
 *.classpath
 *.project

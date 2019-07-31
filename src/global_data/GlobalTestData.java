@@ -75,7 +75,8 @@ public class GlobalTestData {
   public static Map<Long, Order> remoteOrders = new HashMap<>();
   public static Map<Long, Order> ordersAll = new HashMap<>();
   
-  public static final String SHAKESPEARE_FILE = "C:/users/brown/eclipse-workspace/java/com/sebrown/ModernJavaRecipes/resource/shakespeare.txt";
+  public static final String PROJECT_ROOT = System.getProperty("user.dir");
+  public static final String SHAKESPEARE_FILE = PROJECT_ROOT + "\\resource\\shakespeare.txt";
   
   static {
     final long sampleSize = sampleNumbers.size();

@@ -1,7 +1,7 @@
 /**
  * 
  */
-package chapter9;
+package chapter9.BaseballScores;
 
 import java.io.IOException;
 import java.time.LocalDate;
@@ -20,7 +20,7 @@ import org.jsoup.select.Elements;
  */
 public class GamePageLinkSupplier implements Supplier<List<String>>{
 
-  private static final String BASE = "http://gd2.mlb.com/components/game/mlb/";    
+  public static final String BASE = "http://gd2.mlb.com/components/game/mlb/";    
   private LocalDate startDate;    
   private int days;
     
@@ -33,12 +33,12 @@ public class GamePageLinkSupplier implements Supplier<List<String>>{
     try {
       Document doc = Jsoup.connect(formattedURI(localDate)).get();
       Elements links = doc.select("a");
+      
       return links.stream()
           .filter(link -> link.attr("href").contains("gid"))
           .map(link -> link.attr("href"))
           .collect(Collectors.toList());
     } catch (IOException e) {
-      // TODO Auto-generated catch block
       e.printStackTrace();
     }
     return null;
@@ -51,10 +51,10 @@ public class GamePageLinkSupplier implements Supplier<List<String>>{
   
   @Override
   public List<String> get() {
-    return Stream.iterate(startDate, date -> date.plusDays(days))
+    return Stream.iterate(startDate, date -> date.plusDays(1))
+        .limit(days)
         .map(this::getGamePageLinks)
         .flatMap(listURL -> listURL.isEmpty() ? Stream.empty() : listURL.stream())
         .collect(Collectors.toList());
   }
-
 }

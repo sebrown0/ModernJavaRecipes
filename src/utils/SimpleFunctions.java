@@ -1,7 +1,9 @@
 package utils;
 
+import java.util.Comparator;
 import java.util.function.BiConsumer;
 import java.util.function.BiFunction;
+import java.util.function.BinaryOperator;
 import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.function.IntBinaryOperator;
@@ -9,6 +11,8 @@ import java.util.function.IntPredicate;
 import java.util.function.LongBinaryOperator;
 import java.util.function.Predicate;
 import java.util.logging.Logger;
+
+import helpers.Employee;
 
 /**
  * Simple functions, consumers etc for demonstrating composed functionality.
@@ -56,5 +60,17 @@ public class SimpleFunctions {
     }
     return 0;
   };
- 
+
+  public static Comparator<? super Employee> employeeBySalary = (e1, e2) -> { return (e1.getSalary() > e2.getSalary()) ? 0 : -1; };
+  
+  public static Integer sortEmployeeBySalary(Employee e1, Employee e2) {
+    return (e1.getSalary() > e2.getSalary()) ? 0 : -1;
+  }
+  
+  public static Employee sortEmployeeBySalary1(Employee e1, Employee e2) {
+    return (e1.getSalary() > e2.getSalary()) ? e1 : e2;
+  }
+  
+  public static BinaryOperator<String> concatEmpNames = (a,b) -> a.concat(b); 
+   
 }

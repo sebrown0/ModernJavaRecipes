@@ -2,7 +2,7 @@ package helpers;
 
 import utils.ListUtils.IdAble;
 
-public class Employee implements IdAble<Integer>{
+public class Employee implements IdAble<Integer>, Comparable<Employee>{
 
   private String name;
   private String department;
@@ -43,5 +43,10 @@ public class Employee implements IdAble<Integer>{
   @Override
   public String toString() {
     return "Employee [name=" + name + ", department=" + department + ", id=" + id + ", salary=" + salary + "]";
+  }
+
+  @Override
+  public int compareTo(Employee o) {
+    return (this.getSalary() > o.getSalary()) ? 0 : -1;
   }
 }

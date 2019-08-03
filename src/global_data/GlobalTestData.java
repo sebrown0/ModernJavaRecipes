@@ -1,6 +1,7 @@
 package global_data;
 
 import static java.util.stream.Collectors.groupingBy;
+import static helpers.BlogPost.BlogPostType;
 
 import java.util.Arrays;
 import java.util.HashMap;
@@ -12,7 +13,6 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import helpers.BlogPost;
-import helpers.BlogPostType;
 import helpers.Customer;
 import helpers.Customer.CUST_TYPE;
 import helpers.Employee;

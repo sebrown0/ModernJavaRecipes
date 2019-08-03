@@ -12,7 +12,7 @@ import static java.util.stream.Collectors.toList;
 import static org.junit.Assert.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
-
+import static helpers.BlogPost.BlogPostType;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
@@ -26,7 +26,6 @@ import chapter10.NameSupplier;
 import chapter10.SumNums;
 import chapter9.HelperMethods;
 import helpers.BlogPost;
-import helpers.BlogPostType;
 import helpers.Customer;
 import helpers.Customer.CUST_TYPE;
 import helpers.Employee;

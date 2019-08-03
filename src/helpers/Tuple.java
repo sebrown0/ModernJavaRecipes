@@ -1,11 +1,18 @@
 package helpers;
 
+import helpers.BlogPost.BlogPostType;
+
+/**
+ * A record of Blog post and author.
+ * 
+ * @author Steve Brown
+ *
+ */
 public class Tuple {
   private BlogPostType type;
   private String author;
   
   public Tuple(BlogPostType type, String author) {
-    super();
     this.type = type;
     this.author = author;
   }
@@ -25,5 +32,4 @@ public class Tuple {
   public void setAuthor(String author) {
     this.author = author;
   }
-  
 }

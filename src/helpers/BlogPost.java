@@ -2,6 +2,12 @@ package helpers;
 
 public class BlogPost {
 
+  public enum BlogPostType {
+    NEWS,
+    REVIEW,
+    GUIDE
+  }
+  
   private String title;
   private String author;
   private BlogPostType type;

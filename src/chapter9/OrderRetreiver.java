@@ -75,7 +75,7 @@ public class OrderRetreiver {
   public static Optional<Order> getLocalOrder(long id) {
     return Optional.ofNullable(cacheOfOrders.get(id));
   }
-
+  
   /**
    * Get an order from for a given ID from a remote source.
    * An artificial delay is added to simulate getting the Order 
@@ -94,6 +94,16 @@ public class OrderRetreiver {
     } catch (InterruptedException | NoSuchElementException IGNORED) { }
     
     return orderDAO.getOrder(id);
+  }
+  
+  /**
+   * Always gets an order. Trys local first, if that fails go to remote.
+   * Then gets a new order if no order can be found. 
+   * @param id Order id.
+   * @return An order.
+   */
+  public static Order getOrder(long id){
+    return getLocalOrder(id).orElse(getRemoteOrder(id).orElseGet(Order::new));
   }
      
   /*

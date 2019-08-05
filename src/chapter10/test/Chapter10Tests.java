@@ -1,40 +1,44 @@
 package chapter10.test;
 
-import static global_data.GlobalTestData.getBlogs;
-import static global_data.GlobalTestData.getListOfEmployees;
-import static global_data.GlobalTestData.getShopsWithAtLeastOneBadCustomer;
-import static global_data.GlobalTestData.getShopsWithListOfCustomers;
-import static global_data.GlobalTestData.sampleNumbers;
-import static java.util.stream.Collectors.flatMapping;
-import static java.util.stream.Collectors.groupingBy;
-import static java.util.stream.Collectors.mapping;
-import static java.util.stream.Collectors.toList;
+import static global_data.GlobalTestData.*;
+import static java.util.stream.Collectors.*;
 import static org.junit.Assert.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
-import static helpers.BlogPost.BlogPostType;
+
 import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.Random;
 import java.util.stream.IntStream;
 import java.util.stream.Stream;
 
 import org.junit.jupiter.api.Test;
 
+import chapter10.Chapter10Helpers;
 import chapter10.NameSupplier;
 import chapter10.SumNums;
-import chapter9.HelperMethods;
+import chapter9.OrderDatabase;
+import chapter9.OrderRetreiver;
+import global_data.GlobalTestData;
 import helpers.BlogPost;
+import helpers.BlogPost.BlogPostType;
+import helpers.CornerShop;
 import helpers.Customer;
 import helpers.Customer.CUST_TYPE;
 import helpers.Employee;
-import helpers.Shop;
+import helpers.ModernShop;
 import helpers.Tuple;
 import utils.SimpleFunctions;
 
 class Chapter10Tests {
 
+  static {
+    OrderRetreiver.setCacheOfOrders(GlobalTestData.localOrders);
+    OrderRetreiver.setOrderDAO(new OrderDatabase(GlobalTestData.remoteOrders));
+  }
+  
   @Test
   void namesStream() {
     try (Stream<String> names = new NameSupplier().get()){
@@ -45,7 +49,7 @@ class Chapter10Tests {
   
   @Test
   void staticAndPrivateMethodsInAnInterface() {
-    int result = SumNums.addEvens(1,2,3,4,5,6,7,8,9) + SumNums.addOdds(1,3,5,7,9);
+    int result = SumNums.addEvens(1,2,3,4,5,6,7,8,9) + SumNums.addOdds(1,2,3,4,5,6,7,8,9);
     assertEquals(1+2+3+4+5+6+7+8+9, result);
   }
   
@@ -89,7 +93,7 @@ class Chapter10Tests {
   void groupByAndMap() {
     Map<String, List<List<Customer>>> shopsAndCustomers = 
         getShopsWithListOfCustomers().stream()
-          .collect(groupingBy(Shop::getShopName, mapping(Shop::getCustomers, toList())));
+          .collect(groupingBy(CornerShop::getShopName, mapping(CornerShop::getCustomers, toList())));
     
     assertFalse(shopsAndCustomers.keySet().isEmpty());
   }
@@ -98,7 +102,7 @@ class Chapter10Tests {
   void maxCustomerOrderForShop() {
     Map<String, List<Customer>> shopsAndCustomers = 
         getShopsWithListOfCustomers().stream()
-        .collect(groupingBy(Shop::getShopName, flatMapping(HelperMethods::getStreamOfCustomers, toList())));
+        .collect(groupingBy(CornerShop::getShopName, flatMapping(Chapter10Helpers::getStreamOfCustomersFromList, toList())));
 
     List<Customer> davesCustomers = shopsAndCustomers.get("Daves");
     Long bobsMaxOrderAtDaves = davesCustomers.stream().filter(c -> c.getName().compareToIgnoreCase("bob") == 0)
@@ -109,30 +113,89 @@ class Chapter10Tests {
   }
   
   @Test
+  void totalNumberOfCustomers() {
+    long totalNumCustomers = getShopsWithAtLeastOneBadCustomer()
+        .stream() 
+        .map(s -> s.getMapOfCustomerTypeAndCustomers().entrySet().stream())
+        .flatMap(originalMap -> originalMap.map(tuple -> tuple.getValue())) 
+        .flatMap(customerList -> customerList.stream())                     
+        .count();
+          
+    assertEquals(5, totalNumCustomers);
+  }
+
+  @Test
+  void totalNumberOfBadCustomers() {
+    long badCustomers = getShopsWithAtLeastOneBadCustomer()
+        .stream() 
+        .map(s -> s.getMapOfCustomerTypeAndCustomers().entrySet().stream())
+        .flatMap(originalMap -> originalMap.map(tuple -> tuple.getValue()))
+        .flatMap(customerList -> customerList.stream())                     
+        .filter(p -> p.getThisCustomerType().equals(CUST_TYPE.BAD))
+        .count();
+    
+    assertEquals(2, badCustomers);
+  }
+  
+  @Test
   void badCustomerDebtForShop() {
-    Shop maypole = getShopsWithAtLeastOneBadCustomer().get(2);
+    ModernShop maypole = getShopsWithAtLeastOneBadCustomer().get(2);
     Long badDebt = maypole.getMapOfCustomerTypeAndCustomers().entrySet().stream() // Map<CUST_TYPE, List<Customer>> 
       .filter(k -> k.getKey().compareTo(CUST_TYPE.BAD) == 0)                      // Map<CUST_TYPE.BAD, List<Customer>>
       .flatMap(cust -> cust.getValue().stream())                                  // Stream<Customer>
-      .flatMapToLong(order -> order.getOrders().stream()
-                                .mapToLong(o -> o.getValue()))
+      .flatMapToLong(Chapter10Helpers::getOrderValue)
       .sum();
     
     assertEquals(26500, badDebt);
   }
   
   @Test
-  void badCustomerDebtForShop1() {
-    Shop maypole = getShopsWithAtLeastOneBadCustomer().get(2);
+  void badCustomerDebtForShopAndCustomer() {
+    ModernShop maypole = getShopsWithAtLeastOneBadCustomer().get(0);
     Long badDebt = maypole.getMapOfCustomerTypeAndCustomers().entrySet().stream() // Map<CUST_TYPE, List<Customer>> 
       .filter(k -> k.getKey().compareTo(CUST_TYPE.BAD) == 0)                      // Map<CUST_TYPE.BAD, List<Customer>>
       .flatMap(cust -> cust.getValue().stream())                                  // Stream<Customer>
-      .flatMapToLong(HelperMethods::getOrderValue)
+      .filter(cust -> cust.getName().equals("Bob"))
+      .flatMapToLong(Chapter10Helpers::getOrderValue)
       .sum();
     
-    assertEquals(26500, badDebt);
+    assertEquals(600, badDebt);
   }
     
+  @Test
+  void getCustomersFromShopUsingPolymorhpicGetCustomers() {
+    ModernShop lidl = new ModernShop("Lidl @ Safi", mapOfCustomerTypeAndCustomers());
+    Chapter10Helpers helper = new Chapter10Helpers();
+    int numCustomers = helper.getCustomersForShop(lidl).size();
+    
+    assertEquals(3, numCustomers);
+  }
+  
+  @Test
+  void optionalBadCustomers() {
+    ModernShop lidl = new ModernShop("Lidl @ Safi", mapOfCustomerTypeAndCustomers());
+    Chapter10Helpers helper = new Chapter10Helpers();
+    
+    long badCustomers = helper.getCustomersForShop(lidl)
+        .stream()
+        .map(shop -> Chapter10Helpers.findCustomerByType(CUST_TYPE.BAD, shop))
+        .filter(Optional::isPresent)
+        .count();
+    
+    assertEquals(0, badCustomers);
+  }
+  
+  @Test
+  void orderWithXpleOptionals() {
+    List<Long> orderIDs = List.of(3L, 12L, -1L);
+        
+    orderIDs.stream()
+      .map(OrderRetreiver::getOrder)
+      .forEach(order -> {
+        assertEquals(order.getId(), orderIDs.stream().filter(id -> id.equals(order.getId())).findFirst().get());
+        });
+  }
+  
   @Test
   void mapPostByType_AndThenGetHowManyBlogsOfTypeIsGuide() {
     Map<BlogPostType, List<BlogPost>> postsByType = getBlogs().stream()
@@ -156,4 +219,15 @@ class Chapter10Tests {
         .forEach(p -> assertEquals("A1", p.getAuthor()));
   }
   
+  @Test
+  void daysUntil() {    
+    long days = getDateRange().count();
+    assertEquals(10, days);
+  }
+
+  @Test
+  void specificDayInDateRange() {
+    long days = getDateRange().filter(d -> d.getDayOfWeek().name().equalsIgnoreCase("monday")).count();
+    assertEquals(2, days);
+  }
 }

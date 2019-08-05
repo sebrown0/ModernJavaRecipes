@@ -1,8 +1,8 @@
 package global_data;
 
 import static java.util.stream.Collectors.groupingBy;
-import static helpers.BlogPost.BlogPostType;
 
+import java.time.LocalDate;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
@@ -13,12 +13,14 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import helpers.BlogPost;
+import helpers.BlogPost.BlogPostType;
+import helpers.CornerShop;
 import helpers.Customer;
 import helpers.Customer.CUST_TYPE;
 import helpers.Employee;
 import helpers.Golfer;
+import helpers.ModernShop;
 import helpers.Order;
-import helpers.Shop;
 
 /**
  * Data used by tests from all packages.
@@ -62,6 +64,12 @@ public class GlobalTestData {
         "The Furriers", "The Furriers").collect(Collectors.toSet());
   }
   
+  public static Stream<LocalDate> getDateRange() {
+//    LocalDate start = LocalDate.of(2019, 8, 05);
+//    LocalDate end = LocalDate.of(2019, 8, 15);
+    return LocalDate.of(2019, 8, 05).datesUntil(LocalDate.of(2019, 8, 15));
+  }
+  
   public static List<Employee> getListOfEmployees(){
     return List.of(    
         new Employee(1, "Cersei", 250_000, "Lannister"),
@@ -99,7 +107,26 @@ public class GlobalTestData {
         .map(c -> c.setThisCustomerType(random.nextInt(CUST_TYPE.values().length - 1)))
         .collect(groupingBy(Customer::getThisCustomerType));
   }
+    
+  public static List<CornerShop> getShopsWithListOfCustomers(){
+    return List.of(
+        new CornerShop("Daves", getListOfCustomers()),
+        new CornerShop("Lidl"),
+        new CornerShop("Maypole", getListOfCustomers().stream()
+            .filter(c -> c.getName().compareTo("Bob") != 0).collect(Collectors.toList())));
+  }
   
+  public static List<ModernShop> getShopsWithAtLeastOneBadCustomer(){    
+    Map<CUST_TYPE, List<Customer>> mapOfBadCustomers = new HashMap<>();
+    mapOfBadCustomers.put(CUST_TYPE.BAD, getListOfBadCustomers());
+    
+    return List.of(
+        new ModernShop("Daves", mapOfCustomerTypeAndCustomers()),
+        new ModernShop("Lidl"),
+        new ModernShop("Maypole", mapOfBadCustomers)
+        );
+  }
+ 
   public static Map<CUST_TYPE, List<Customer>> mapOfCustomerTypeAndCustomers() {
     Map<CUST_TYPE, List<Customer>> customersWithType = new HashMap<>();
     customersWithType.put(CUST_TYPE.BAD, Arrays.asList(getListOfCustomers().get(0), getListOfCustomers().get(1)));
@@ -107,30 +134,13 @@ public class GlobalTestData {
     return customersWithType;
   }
   
-  public static List<Shop> getShopsWithListOfCustomers(){
-    return List.of(
-        new Shop("Daves", getListOfCustomers()),
-        new Shop("Lidl"),
-        new Shop("Maypole", getListOfCustomers().stream()
-            .filter(c -> c.getName().compareTo("Bob") != 0).collect(Collectors.toList())));
-  }
-  
-  public static List<Shop> getShopsWithAtLeastOneBadCustomer(){
-    List<Customer> badCustomers = List.of(
+  public static List<Customer> getListOfBadCustomers(){
+    return   List.of(
         new Customer("Bad Customer 1", CUST_TYPE.BAD)
           .addOrders(localOrders.entrySet().stream().map(o -> o.getValue()).collect(Collectors.toList())),
         new Customer("Bad Customer 2", CUST_TYPE.BAD)
           .addOrders(ordersAll.entrySet().stream().map(o -> o.getValue()).collect(Collectors.toList()))
-        );
-    
-    Map<CUST_TYPE, List<Customer>> mapOfBadCustomers = new HashMap<>();
-    mapOfBadCustomers.put(CUST_TYPE.BAD, badCustomers);
-    
-    return List.of(
-        new Shop("Daves", mapOfCustomerTypeAndCustomers()),
-        new Shop("Lidl"),
-        new Shop("Maypole", mapOfBadCustomers)
-        );
+      );
   }
 
   public static Map<Long, Order> localOrders = new HashMap<>();  

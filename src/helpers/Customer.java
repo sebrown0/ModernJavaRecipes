@@ -44,11 +44,11 @@ public class Customer {
 		this.thisCustomerType = CUST_TYPE.UNKNOWN;
 	}
 	
-	 public Customer(String name, CUST_TYPE type) {
-	    super();
-	    this.name = name;
-	    this.thisCustomerType = type;
-	  }
+	public Customer(String name, CUST_TYPE type) {
+    super();
+    this.name = name;
+    this.thisCustomerType = type;
+  }
 
 	public Customer addOrder(Order o) {
 		this.orders.add(o);

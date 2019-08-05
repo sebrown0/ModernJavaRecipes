@@ -3,35 +3,35 @@
  */
 package helpers;
 
-import java.util.ArrayList;
+import java.util.Collection;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 import helpers.Customer.CUST_TYPE;
 
 /**
- * POJO for a basic shop.
+ * POJO for a modern shop.
+ * 
+ * The modern shop is more advanced as it
+ * holds records for the customer and their type.
  * 
  * @author Steve Brown
  *
  */
-public class Shop {
+public class ModernShop implements ShopCustomers{
 
   private String shopName;
-  private List<Customer> customers = new ArrayList<>();
   private Map<CUST_TYPE, List<Customer>> mapOfCustomerTypeAndCustomers = new HashMap<>();
   
-  public Shop(String shopName) {
+  public ModernShop(String shopName) {
     this.shopName = shopName;
   }
-  
-  public Shop(String shopName, List<Customer> customers) {
-    this.shopName = shopName;
-    this.customers = customers;
-  }
-  
-  public Shop(String shopName, Map<CUST_TYPE, List<Customer>> mapOfCustomerTypeAndCustomers) {
+    
+  public ModernShop(String shopName, Map<CUST_TYPE, List<Customer>> mapOfCustomerTypeAndCustomers) {
     this.shopName = shopName;
     this.mapOfCustomerTypeAndCustomers = mapOfCustomerTypeAndCustomers;
   } 
@@ -44,13 +44,6 @@ public class Shop {
     this.shopName = shopName;
   }
   
-  public List<Customer> getCustomers() {
-    return customers;
-  }
-  
-  public List<Customer> getCustomers(Shop shop) {
-    return this.customers;
-  }
   
   public Map<CUST_TYPE, List<Customer>> getMapOfCustomerTypeAndCustomers() {
     return mapOfCustomerTypeAndCustomers;
@@ -59,14 +52,22 @@ public class Shop {
   public void setMapOfCustomerTypeAndCustomers(Map<CUST_TYPE, List<Customer>> mapOfCustomerTypeAndCustomers) {
     this.mapOfCustomerTypeAndCustomers = mapOfCustomerTypeAndCustomers;
   }
-
-  public void setCustomers(List<Customer> customers) {
-    this.customers = customers;
-  }
   
   @Override
   public String toString() {
-    return String.format("Shop [shopName=%s, customers=%s]", shopName, customers);
+    return String.format("Shop [shopName=%s]", shopName);
+  }
+
+  @SuppressWarnings("unchecked")        // ONLY DOING THIS FOR EXPERIMENTAL PURPOSES.
+  @Override
+  public <R extends Collection<Customer>> R getCustomers() {
+    Set<Customer> customers = new HashSet<Customer>();
+    
+    customers = mapOfCustomerTypeAndCustomers.entrySet()
+        .stream().flatMap(e -> e.getValue().stream())
+        .collect(Collectors.toSet());
+    
+    return (R) customers;
   }
   
 }
